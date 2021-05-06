@@ -79,7 +79,7 @@ If you omit the subcommand, upload will be executed.
 ## Environment variables
 
 |environment variable|description|
-|-|-|-|
+|-|-|
 |KINTONE_BASE_URL|Base-url of your kintone|
 |KINTONE_USERNAME|Login username|
 |KINTONE_PASSWORD|User's password|
