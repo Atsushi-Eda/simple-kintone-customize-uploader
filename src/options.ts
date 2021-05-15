@@ -14,7 +14,6 @@ commander
   .option('-a, --app-id <number>', 'App id')
   .option('-d, --no-desktop', "Don't apply to desktop")
   .option('-m, --no-mobile', "Don't apply to mobile")
-  .option('-r, --no-rewrite', 'No rewrite')
   .option('-w, --watch', 'Watch the changes of customize files and re-run')
   .parse(process.argv);
 const options = commander.opts();

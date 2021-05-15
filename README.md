@@ -72,7 +72,6 @@ If you omit the subcommand, upload will be executed.
 | -a, --app-id              | App id                                                                                           | upload, download, remove, list |
 | -d, --no-desktop          | Don't apply to desktop                                                                           | upload                         |
 | -m, --no-mobile           | Don't apply to mobile                                                                            | upload                         |
-| -r, --no-rewrite          | No rewrite                                                                                       | upload                         |
 | -w, --watch               | Watch the changes of customize files and re-run                                                  | upload                         |
 | -h, --help                | display help for command                                                                         | upload, download, remove, list |
 

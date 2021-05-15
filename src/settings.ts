@@ -7,7 +7,6 @@ interface Settings {
   watch: boolean;
   desktop: boolean;
   mobile: boolean;
-  rewrite: boolean;
 }
 const getSettings = async (): Promise<Settings> => {
   const settings = {
@@ -15,7 +14,6 @@ const getSettings = async (): Promise<Settings> => {
     watch: Boolean(options.watch),
     desktop: Boolean(options.desktop),
     mobile: Boolean(options.mobile),
-    rewrite: Boolean(options.rewrite),
   };
   settings.appId = Number(settings.appId || (await readUserInput('Input your app id: ')));
   return settings;

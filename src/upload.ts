@@ -38,20 +38,17 @@ const generateUpdateCustomizeParameterProperty = (
   appCustomizeResponse: AppCustomizeForResponse,
   filePaths: string[],
   fileKeys: string[],
-  rewrite: boolean,
 ): AppCustomizeForParameter => {
   const appCustomizeParameter: AppCustomizeForParameter = appCustomizeResponse;
   filePaths.forEach((filePath, index) => {
     const customizeFileType = castCustomizeFileType(getExtension(filePath));
     let removeIndex = -1;
     let insertIndex: number = appCustomizeResponse[customizeFileType].length;
-    if (rewrite) {
-      removeIndex = appCustomizeResponse[customizeFileType].findIndex(
-        (file) =>
-          (file.type === 'URL' && file.url === filePath) ||
-          (file.type === 'FILE' && file.file.name === getFileName(filePath)),
-      );
-    }
+    removeIndex = appCustomizeResponse[customizeFileType].findIndex(
+      (file) =>
+        (file.type === 'URL' && file.url === filePath) ||
+        (file.type === 'FILE' && file.file.name === getFileName(filePath)),
+    );
     if (removeIndex >= 0) {
       (appCustomizeParameter[customizeFileType] || []).splice(removeIndex, 1);
       insertIndex = removeIndex;
@@ -79,7 +76,6 @@ const updateCustomize = async (
   filePaths: string[],
   desktop: boolean,
   mobile: boolean,
-  rewrite: boolean,
 ): Promise<void> => {
   if (!filePaths.length) {
     return;
@@ -94,7 +90,6 @@ const updateCustomize = async (
       customize.desktop,
       filePaths,
       fileKeys[0],
-      rewrite,
     );
   }
   if (mobile) {
@@ -102,7 +97,6 @@ const updateCustomize = async (
       customize.mobile,
       filePaths,
       fileKeys[1],
-      rewrite,
     );
   }
   outputMessage('Updating customize setting...');
@@ -158,14 +152,7 @@ const deployApp = async (client: KintoneRestAPIClient, app: AppID): Promise<void
   const client = await getClient();
   const settings = await getSettings();
 
-  await updateCustomize(
-    client,
-    settings.appId,
-    customizeFilePaths,
-    settings.desktop,
-    settings.mobile,
-    settings.rewrite,
-  );
+  await updateCustomize(client, settings.appId, customizeFilePaths, settings.desktop, settings.mobile);
   await updateViews(client, settings.appId, viewFilePaths, settings.mobile);
   await deployApp(client, settings.appId);
 
@@ -180,14 +167,7 @@ const deployApp = async (client: KintoneRestAPIClient, app: AppID): Promise<void
             return;
           }
           processing = true;
-          await updateCustomize(
-            client,
-            settings.appId,
-            customizeFilePaths,
-            settings.desktop,
-            settings.mobile,
-            settings.rewrite,
-          );
+          await updateCustomize(client, settings.appId, customizeFilePaths, settings.desktop, settings.mobile);
           await updateViews(client, settings.appId, viewFilePaths, settings.mobile);
           await deployApp(client, settings.appId);
           processing = false;
