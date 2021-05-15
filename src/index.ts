@@ -7,10 +7,10 @@ commander
     isDefault: true,
     executableFile: 'upload',
   })
-  .command('download <device/subContentType/index>', 'Download customize file', {
+  .command('download <device/customizeFileType/index>', 'Download customize file', {
     executableFile: 'download',
   })
-  .command('remove <device/subContentType/index>', 'Remove customize file', {
+  .command('remove <device/customizeFileType/index>', 'Remove customize file', {
     executableFile: 'remove',
   })
   .command('list', 'Show customize files list', {

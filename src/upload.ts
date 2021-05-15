@@ -1,8 +1,17 @@
 import { AppID, AppCustomizeForParameter, AppCustomizeForResponse } from '@kintone/rest-api-client/lib/client/types';
 import { KintoneRestAPIClient } from '@kintone/rest-api-client';
 import watch from 'node-watch';
+import fs from 'fs';
 import commander from 'commander';
-import { isUrl, getFileName, getExtension, castSubContentType, outputMessage } from './utils';
+import {
+  isUrl,
+  isHtml,
+  getFileName,
+  getExtension,
+  getFileNameWithoutExtension,
+  castCustomizeFileType,
+  outputMessage,
+} from './utils';
 import { getUpdatableCustomize, sleepUntilDeployFinish } from './clientUtils';
 import { getSettings } from './settings';
 import { getClient } from './client';
@@ -33,21 +42,21 @@ const generateUpdateCustomizeParameterProperty = (
 ): AppCustomizeForParameter => {
   const appCustomizeParameter: AppCustomizeForParameter = appCustomizeResponse;
   filePaths.forEach((filePath, index) => {
-    const subContentType = castSubContentType(getExtension(filePath));
+    const customizeFileType = castCustomizeFileType(getExtension(filePath));
     let removeIndex = -1;
-    let insertIndex: number = appCustomizeResponse[subContentType].length;
+    let insertIndex: number = appCustomizeResponse[customizeFileType].length;
     if (rewrite) {
-      removeIndex = appCustomizeResponse[subContentType].findIndex(
+      removeIndex = appCustomizeResponse[customizeFileType].findIndex(
         (file) =>
           (file.type === 'URL' && file.url === filePath) ||
           (file.type === 'FILE' && file.file.name === getFileName(filePath)),
       );
     }
     if (removeIndex >= 0) {
-      (appCustomizeParameter[subContentType] || []).splice(removeIndex, 1);
+      (appCustomizeParameter[customizeFileType] || []).splice(removeIndex, 1);
       insertIndex = removeIndex;
     }
-    (appCustomizeParameter[subContentType] || []).splice(
+    (appCustomizeParameter[customizeFileType] || []).splice(
       insertIndex,
       0,
       fileKeys[index]
@@ -72,6 +81,9 @@ const updateCustomize = async (
   mobile: boolean,
   rewrite: boolean,
 ): Promise<void> => {
+  if (!filePaths.length) {
+    return;
+  }
   outputMessage('Getting current customization setting on kintone app...');
   const customize = await getUpdatableCustomize(client, app);
   outputMessage('Uploading customization files...');
@@ -95,6 +107,43 @@ const updateCustomize = async (
   }
   outputMessage('Updating customize setting...');
   await client.app.updateAppCustomize(updateCustomizeParameter);
+};
+
+const updateViews = async (
+  client: KintoneRestAPIClient,
+  app: AppID,
+  filePaths: string[],
+  mobile: boolean,
+): Promise<void> => {
+  if (!filePaths.length) {
+    return;
+  }
+  outputMessage('Getting current views setting on kintone app...');
+  const { views } = await client.app.getViews({ app });
+  const updateViewsParameter: Parameters<KintoneRestAPIClient['app']['updateViews']>[0] = { app, views };
+  filePaths.forEach((filePath) => {
+    const viewName = getFileNameWithoutExtension(filePath);
+    const html = fs.readFileSync(filePath, 'utf8');
+    if (viewName in updateViewsParameter.views) {
+      const view = updateViewsParameter.views[viewName];
+      if (view.type === 'CUSTOM') {
+        view.html = html;
+      }
+    } else {
+      updateViewsParameter.views[viewName] = {
+        type: 'CUSTOM',
+        name: viewName,
+        index: String(Object.keys(updateViewsParameter.views).length),
+        html,
+        device: mobile ? 'ANY' : 'DESKTOP',
+      };
+    }
+  });
+  outputMessage('Updating views setting...');
+  await client.app.updateViews(updateViewsParameter);
+};
+
+const deployApp = async (client: KintoneRestAPIClient, app: AppID): Promise<void> => {
   await client.app.deployApp({ apps: [{ app }] });
   outputMessage('Wait for deploying completed...');
   await sleepUntilDeployFinish(client, app);
@@ -104,10 +153,21 @@ const updateCustomize = async (
 (async () => {
   commander.parse(process.argv);
   const filePaths = commander.args[0].split(',');
+  const customizeFilePaths = filePaths.filter((filePath) => !isHtml(getExtension(filePath)));
+  const viewFilePaths = filePaths.filter((filePath) => isHtml(getExtension(filePath)));
   const client = await getClient();
   const settings = await getSettings();
 
-  await updateCustomize(client, settings.appId, filePaths, settings.desktop, settings.mobile, settings.rewrite);
+  await updateCustomize(
+    client,
+    settings.appId,
+    customizeFilePaths,
+    settings.desktop,
+    settings.mobile,
+    settings.rewrite,
+  );
+  await updateViews(client, settings.appId, viewFilePaths, settings.mobile);
+  await deployApp(client, settings.appId);
 
   if (settings.watch) {
     let processing = false;
@@ -120,7 +180,16 @@ const updateCustomize = async (
             return;
           }
           processing = true;
-          await updateCustomize(client, settings.appId, filePaths, settings.desktop, settings.mobile, settings.rewrite);
+          await updateCustomize(
+            client,
+            settings.appId,
+            customizeFilePaths,
+            settings.desktop,
+            settings.mobile,
+            settings.rewrite,
+          );
+          await updateViews(client, settings.appId, viewFilePaths, settings.mobile);
+          await deployApp(client, settings.appId);
           processing = false;
           outputMessage('Watching for file changes...');
         });

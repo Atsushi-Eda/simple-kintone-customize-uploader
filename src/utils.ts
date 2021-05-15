@@ -32,6 +32,10 @@ export function getExtension(filePath: string): string {
   return (filePath.split('.').pop() || '').toLowerCase();
 }
 
+export function getFileNameWithoutExtension(filePath: string): string {
+  return getFileName(filePath).replace('.', '').replace(getExtension(filePath), '');
+}
+
 export function castDevice(str: string): 'desktop' | 'mobile' {
   switch (str) {
     case 'mobile':
@@ -41,13 +45,17 @@ export function castDevice(str: string): 'desktop' | 'mobile' {
   }
 }
 
-export function castSubContentType(str: string): 'js' | 'css' {
+export function castCustomizeFileType(str: string): 'js' | 'css' {
   switch (str) {
     case 'css':
       return 'css';
     default:
       return 'js';
   }
+}
+
+export function isHtml(str: string): boolean {
+  return str === 'html';
 }
 
 export function isUrl(str: string): boolean {

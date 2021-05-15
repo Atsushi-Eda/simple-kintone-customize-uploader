@@ -21,9 +21,9 @@ export async function getUpdatableCustomize(
   const customizeChunks = await Promise.all(
     (['desktop', 'mobile'] as ('desktop' | 'mobile')[]).map((device) =>
       Promise.all(
-        (['js', 'css'] as ('js' | 'css')[]).map((subContentType) =>
+        (['js', 'css'] as ('js' | 'css')[]).map((customizeFileType) =>
           Promise.all(
-            customize[device][subContentType].map(async (file) =>
+            customize[device][customizeFileType].map(async (file) =>
               file.type !== 'FILE'
                 ? file
                 : {
