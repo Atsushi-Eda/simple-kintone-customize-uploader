@@ -1,6 +1,6 @@
 {
   "name": "simple-kintone-customize-uploader",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A kintone customize uploader without manifest.json",
   "main": "dist/index.js",
   "scripts": {
