@@ -4,16 +4,22 @@ A kintone customize uploader without manifest.json
 
 ## Usage example
 
-### Upload customize files
+### Upload a customize file
 
 ```
-npx simple-kintone-customize-uploader sample.js,sample.css
+npx simple-kintone-customize-uploader sample.js
 ```
 
-### Automatically upload customize files
+### Automatically upload a customize file
 
 ```
-npx simple-kintone-customize-uploader sample.js,sample.css -w
+npx simple-kintone-customize-uploader sample.js -w
+```
+
+### Automatically upload multiple customize files
+
+```
+npx simple-kintone-customize-uploader multiple sample.js,sample.css,sample.html -w
 ```
 
 ### Download customize file
@@ -49,12 +55,12 @@ mobile-css
 
 ## Sub commands
 
-| sub command | parameter                   | description                                                       |
-| ----------- | --------------------------- | ----------------------------------------------------------------- |
-| upload      | filePaths                   | Upload customize files. Parameter is file paths.(comma separated) |
-| download    | device/subContentType/index | Download customize file. Parameter is index of customize file.    |
-| remove      | device/subContentType/index | Remove customize file. Parameter is index of customize file.      |
-| list        | -                           | Show customize files list.                                        |
+| sub command | parameter                | description                                                                                                                              |
+| ----------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| upload      | filePaths                | Upload customize files. Parameter is file paths. (comma separated string)                                                                |
+| download    | device/contentType/index | Download customize file. Parameter is index of customize file. (device: desktop, mobile, any. contentType: js, css, html. index: number) |
+| remove      | device/contentType/index | Remove customize file. Parameter is index of customize file. (device: desktop, mobile, any. contentType: js, css, html. index: number)   |
+| list        | -                        | Show customize files list.                                                                                                               |
 
 If you omit the subcommand, upload will be executed.
 
@@ -77,11 +83,11 @@ If you omit the subcommand, upload will be executed.
 
 ## Environment variables
 
-| environment variable        | description                                                                                      |
-| --------------------------- | ------------------------------------------------------------------------------------------------ |
-| KINTONE_BASE_URL            | Base-url of your kintone                                                                         |
-| KINTONE_USERNAME            | Login username                                                                                   |
-| KINTONE_PASSWORD            | User's password                                                                                  |
-| KINTONE_OAUTH_TOKEN         | OAuth access token (If you set a set of --username and --password, this value is not necessary.) |
-| KINTONE_BASIC_AUTH_USERNAME | Basic Authentication username                                                                    |
-| KINTONE_BASIC_AUTH_PASSWORD | Basic Authentication password                                                                    |
+| environment variable        | description                                                                                                  |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| KINTONE_BASE_URL            | Base-url of your kintone                                                                                     |
+| KINTONE_USERNAME            | Login username                                                                                               |
+| KINTONE_PASSWORD            | User's password                                                                                              |
+| KINTONE_OAUTH_TOKEN         | OAuth access token (If you set a set of KINTONE_BASE_URL and KINTONE_USERNAME, this value is not necessary.) |
+| KINTONE_BASIC_AUTH_USERNAME | Basic Authentication username                                                                                |
+| KINTONE_BASIC_AUTH_PASSWORD | Basic Authentication password                                                                                |
