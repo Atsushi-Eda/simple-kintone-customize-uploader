@@ -12,7 +12,7 @@ async function copyFile(client, file) {
 }
 async function getUpdatableCustomize(client, app) {
     const customize = await client.app.getAppCustomize({ app });
-    const customizeChunks = await Promise.all(['desktop', 'mobile'].map((device) => Promise.all(['js', 'css'].map((subContentType) => Promise.all(customize[device][subContentType].map(async (file) => file.type !== 'FILE'
+    const customizeChunks = await Promise.all(['desktop', 'mobile'].map((device) => Promise.all(['js', 'css'].map((customizeFileType) => Promise.all(customize[device][customizeFileType].map(async (file) => file.type !== 'FILE'
         ? file
         : {
             type: 'FILE',
@@ -32,3 +32,4 @@ async function sleepUntilDeployFinish(client, appId) {
     }, 1000);
 }
 exports.sleepUntilDeployFinish = sleepUntilDeployFinish;
+//# sourceMappingURL=clientUtils.js.map

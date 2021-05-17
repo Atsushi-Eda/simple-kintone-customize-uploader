@@ -13,12 +13,21 @@ const client_1 = require("./client");
     const settings = await settings_1.getSettings();
     const customize = await client.app.getAppCustomize({ app: settings.appId });
     ['desktop', 'mobile'].forEach((device) => {
-        ['js', 'css'].forEach((subContentType) => {
-            utils_1.outputMessage(`${device}-${subContentType}`);
-            customize[device][subContentType].forEach((file) => {
+        ['js', 'css'].forEach((customizeFileType) => {
+            utils_1.outputMessage(`${device}-${customizeFileType}`);
+            customize[device][customizeFileType].forEach((file) => {
                 utils_1.outputMessage(`|-${file.type === 'URL' ? file.url : file.file.name}`);
             });
             utils_1.outputMessage('');
         });
     });
+    const { views } = await client.app.getViews({ app: settings.appId });
+    utils_1.outputMessage('view');
+    Object.values(views)
+        .sort((a, b) => Number(a.index) - Number(b.index))
+        .forEach((view) => {
+        utils_1.outputMessage(`|-${view.name} (${view.type})`);
+    });
+    utils_1.outputMessage('');
 })();
+//# sourceMappingURL=list.js.map

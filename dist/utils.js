@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.outputMessage = exports.isUrl = exports.castSubContentType = exports.castDevice = exports.getExtension = exports.getFileName = exports.sleepBy = exports.readUserInput = void 0;
+exports.outputMessage = exports.isUrl = exports.isHtml = exports.castCustomizeFileType = exports.castDevice = exports.getFileNameWithoutExtension = exports.getExtension = exports.getFileName = exports.sleepBy = exports.readUserInput = void 0;
 const readline_1 = __importDefault(require("readline"));
 function readUserInput(question) {
     const readlineInterface = readline_1.default.createInterface({
@@ -37,6 +37,10 @@ function getExtension(filePath) {
     return (filePath.split('.').pop() || '').toLowerCase();
 }
 exports.getExtension = getExtension;
+function getFileNameWithoutExtension(filePath) {
+    return getFileName(filePath).replace('.', '').replace(getExtension(filePath), '');
+}
+exports.getFileNameWithoutExtension = getFileNameWithoutExtension;
 function castDevice(str) {
     switch (str) {
         case 'mobile':
@@ -46,7 +50,7 @@ function castDevice(str) {
     }
 }
 exports.castDevice = castDevice;
-function castSubContentType(str) {
+function castCustomizeFileType(str) {
     switch (str) {
         case 'css':
             return 'css';
@@ -54,7 +58,11 @@ function castSubContentType(str) {
             return 'js';
     }
 }
-exports.castSubContentType = castSubContentType;
+exports.castCustomizeFileType = castCustomizeFileType;
+function isHtml(str) {
+    return str === 'html';
+}
+exports.isHtml = isHtml;
 function isUrl(str) {
     return /^https?:\/\/.*/i.test(str);
 }
@@ -64,3 +72,4 @@ function outputMessage(str) {
     console.log(str);
 }
 exports.outputMessage = outputMessage;
+//# sourceMappingURL=utils.js.map
